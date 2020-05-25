@@ -72,7 +72,7 @@ if os.path.isdir(local_path_backup ):
         if upload_result:
             for file in upload_result:
                 if not(upload_result[file] == backup_files_integrity[file]):
-                    message = "{}\nFile: {} Error: {}".format(file, socket.gethostname())
+                    message = "{}\nFile: {} Error: {}".format(message, file, socket.gethostname())
 
             if len(message) > 0:
                 subj = "ERROR al copiar el Backup desde {} - {} hasta Azure".format(host_name, host_ip_public)
