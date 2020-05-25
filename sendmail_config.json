@@ -1,0 +1,8 @@
+{
+    "mailfrom":"informes@kitel.es",
+    "mailuser":"informes@kitel.es",
+    "mailpassword":"5gdaCd13?",
+    "mailserver" : "mailsrv6.dondominio.net",
+    "mailserver_port" : "587",
+    "mail_alert":["rojasrjosee@gmail.com", "jygrrr@gmail.com"]
+}

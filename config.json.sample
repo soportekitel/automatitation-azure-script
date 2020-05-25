@@ -1,0 +1,1 @@
+{"resource_group_name": "TestAsterisk", "security_group_name": "pbx01-test-nsg", "os_system": "linux", "ddns": {"infovoip-maria-casa.infovoip-spain.com": "82.213.211.4"}, "subscription_id": "02251b4d-dc9f-4654-8f4d-2abc0ca6014a", "client_id": "fed5be32-a59a-48dc-b651-41a73f6cc720", "secret": "Rny0RJ7v=rBO/0GnIw]LpKP@zbQ8Wn8p", "tenant": "f76884ff-6537-4354-b210-615634410d85"}

@@ -1,0 +1,15 @@
+{
+    "backup_account_name": "backupfrecuente",
+    "backup_account_key": "wBsb62kh2EHpXBdlIH+HilnZmwzV1dtd/tfDHCMEBZg7kvy6pEAoXXyM+9eWrVNlImgb8ywti2TIb/6c5GKcuQ==",
+    "backup_account_connection": "DefaultEndpointsProtocol=https;AccountName=backupfrecuente;AccountKey=wBsb62kh2EHpXBdlIH+HilnZmwzV1dtd/tfDHCMEBZg7kvy6pEAoXXyM+9eWrVNlImgb8ywti2TIb/6c5GKcuQ==;EndpointSuffix=core.windows.net",
+    "backup_container_backup":"backup",
+    "backup_directory_backup":"C:\\infodes\\backup",
+    "backup_database": "EVOLUTIONDB",
+    "backup_database_server": "localhost",
+    "backup_database_port": "1433",
+    "backup_database_user": "sa",
+    "backup_database_password": "$$5gdaCd13$$",
+    "backup_database_name":"evolution_backup",
+    "backup_directory_evolution":"C:\\Users\\admevolution\\Documents\\Developer.NET",
+    "backup_mail_alert":["rojasrjosee@gmail.com", "jygrrr@gmail.com"]
+}
