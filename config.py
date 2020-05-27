@@ -70,3 +70,7 @@ class Config(object):
     def set_resource_group_name(self, values):
         self.json_data['resource_group_name'] = values
         self.save()
+
+    def set_evolution(self, values):
+        self.json_data['evolution'] = values
+        self.save()

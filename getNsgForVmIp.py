@@ -62,13 +62,15 @@ try:
                         not_find_instance = False
                         resource_group_name = group_name
                         nsg_id = network_client.network_interfaces.get(group_name, interface_name).network_security_group.id
+                        config.set_os_system(vm.storage_profile.os_disk.os_type.__dict__['_value_'])
                         ddns_field = {}
                         for key_tag in vm.tags:
                             if 	re.match(r'^DDNS.*', key_tag):
-                                config.set_os_system(vm.storage_profile.os_disk.os_type.__dict__['_value_'])
                                 tags_values = vm.tags[key_tag].split(";")
                                 for tag in tags_values:
                                     ddns_field[tag] = socket.gethostbyname(tag)
+                            if key_tag == 'evolution':
+                                config.set_evolution(vm.tags[key_tag])
 
 
     if nsg_id:
