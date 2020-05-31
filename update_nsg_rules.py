@@ -122,7 +122,7 @@ def update_rules_evolution(os_system, ip_list, network_client, resource_group_na
     'direction':"inbound",
     'priority':700,
     'protocol':'*',
-    'source_address_prefixes': ip_list,
+    'source_address_prefix': ip_list,
     'source_port_range':'*',
     }
     )
