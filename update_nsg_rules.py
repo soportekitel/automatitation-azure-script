@@ -116,9 +116,9 @@ def update_rules_evolution(os_system, evolution, network_client, resource_group_
     new_security_rule_name,
     {
     'access':"allow",
-    'description':'Accesos para evolution',
+    'description':'Permitir evolution',
     'destination_address_prefix':'*',
-    'destination_port_range':'',
+    'destination_port_range':'*',
     'direction':"inbound",
     'priority':700,
     'protocol':'*',
@@ -126,6 +126,7 @@ def update_rules_evolution(os_system, evolution, network_client, resource_group_
     'source_port_range':'*',
     }
     )
+
 
 def update_general_rules(os_system, ip_list, general_group, network_client, resource_group_name, security_group_name ):
     if general_group == "all":
