@@ -34,6 +34,7 @@ def get_ip_address():
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
 
+evolution_public=""
 ip_lan = get_ip_address()
 ip_list = []
 
@@ -71,6 +72,9 @@ try:
                                     ddns_field[tag] = socket.gethostbyname(tag)
                             if key_tag == 'evolution':
                                 config.set_evolution(vm.tags[key_tag])
+                            if key_tag == 'evolution_public':
+                                evolution_public = vm.tags[key_tag] + "/32"
+                                config.set_evolution_public(vm.tags[key_tag])
 
 
     if nsg_id:
@@ -88,6 +92,9 @@ try:
 
     if ip_list:
         update_nsg_rules.update_rules(config.get_os_system(), ip_list, network_client, config.get_resource_group_name(), config.get_security_group_name())
+
+    if evolution_public:
+        update_nsg_rules.update_rules_evolution(config.get_os_system(), evolution_public, network_client, config.get_resource_group_name(), config.get_security_group_name())
 
 except Exception as eerror:
     subj = "ERROR al ejecutar script {} en {} - {}".format(os.path.basename(__file__), \

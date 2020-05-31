@@ -107,6 +107,26 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         }
         )
 
+
+def update_rules_evolution(os_system, ip_list, network_client, resource_group_name, security_group_name ):
+    new_security_rule_name = 'evolution'
+    async_security_rule = network_client.security_rules.create_or_update(
+    resource_group_name,
+    security_group_name,
+    new_security_rule_name,
+    {
+    'access':"allow",
+    'description':'Accesos para evolution',
+    'destination_address_prefix':'*',
+    'destination_port_range':'',
+    'direction':"inbound",
+    'priority':700,
+    'protocol':'*',
+    'source_address_prefixes': ip_list,
+    'source_port_range':'*',
+    }
+    )
+
 def update_general_rules(os_system, ip_list, general_group, network_client, resource_group_name, security_group_name ):
     if general_group == "all":
         new_security_rule_name = 'PermitirLocalidadesKitel'

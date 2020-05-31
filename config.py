@@ -52,6 +52,14 @@ class Config(object):
         return self.json_data.get('os_system')
 
 
+    def get_evolution(self, values):
+        return self.json_data.get('evolution')
+
+
+    def get_evolution_public(self, values):
+        return self.json_data.get('evolution_public')
+
+
     def set_os_system(self, values):
         self.json_data['os_system'] = values
         self.save()
@@ -71,6 +79,12 @@ class Config(object):
         self.json_data['resource_group_name'] = values
         self.save()
 
+
     def set_evolution(self, values):
+        self.json_data['evolution'] = values
+        self.save()
+
+
+    def set_evolution_public(self, values):
         self.json_data['evolution'] = values
         self.save()
