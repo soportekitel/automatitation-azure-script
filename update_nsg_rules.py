@@ -108,7 +108,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         )
 
 
-def update_rules_evolution(os_system, ip_list, network_client, resource_group_name, security_group_name ):
+def update_rules_evolution(os_system, evolution, network_client, resource_group_name, security_group_name ):
     new_security_rule_name = 'evolution'
     async_security_rule = network_client.security_rules.create_or_update(
     resource_group_name,
@@ -122,7 +122,7 @@ def update_rules_evolution(os_system, ip_list, network_client, resource_group_na
     'direction':"inbound",
     'priority':700,
     'protocol':'*',
-    'source_address_prefix': ip_list,
+    'source_address_prefix': evolution,
     'source_port_range':'*',
     }
     )
