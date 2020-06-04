@@ -61,6 +61,7 @@ try:
                 for ip in ip_interface:
                     if ip.private_ip_address == ip_lan:
                         not_find_instance = False
+                        hostname = vm.name
                         resource_group_name = group_name
                         nsg_id = network_client.network_interfaces.get(group_name, interface_name).network_security_group.id
                         config.set_os_system(vm.storage_profile.os_disk.os_type.__dict__['_value_'])
@@ -95,6 +96,9 @@ try:
 
     if evolution_public:
         update_nsg_rules.update_rules_evolution(config.get_os_system(), evolution_public, network_client, config.get_resource_group_name(), config.get_security_group_name())
+
+    if config.get_os_system.upper() == 'LINUX':
+        os.system("hostnamectl set-hostname {}".format(vm.name))
 
 except Exception as eerror:
     subj = "ERROR al ejecutar script {} en {} - {}".format(os.path.basename(__file__), \
