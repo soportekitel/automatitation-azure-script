@@ -70,6 +70,23 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         'source_port_range':'*',
         }
         )
+        new_security_rule_name = 'ICMP_dinamic_ip'
+        async_security_rule = network_client.security_rules.create_or_update(
+        resource_group_name,
+        security_group_name,
+        new_security_rule_name,
+        {
+        'access':"allow",
+        'description':'Ping para clientes con dns dinamico',
+        'destination_address_prefix':'*',
+        'destination_port_range':'*',
+        'direction':"inbound",
+        'priority':1404,
+        'protocol':'ICMP',
+        'source_address_prefixes': ip_list,
+        'source_port_range':'*',
+        }
+        )
     else:
         new_security_rule_name = 'Iagent_dinamic_ip'
         async_security_rule = network_client.security_rules.create_or_update(
@@ -187,23 +204,6 @@ def update_general_rules(os_system, ip_list, general_group, network_client, reso
 
 def update_all_rules(os_system, network_client, resource_group_name, security_group_name ):
     if os_system.upper() == 'LINUX':
-        new_security_rule_name = 'ICMP'
-        async_security_rule = network_client.security_rules.create_or_update(
-        resource_group_name,
-        security_group_name,
-        new_security_rule_name,
-        {
-        'access':"allow",
-        'description':'Ping',
-        'destination_address_prefix':'*',
-        'destination_port_range':'*',
-        'direction':"inbound",
-        'priority':400,
-        'protocol':'ICMP',
-        'source_address_prefix': '*',
-        'source_port_range':'*',
-        }
-        )
         new_security_rule_name = 'FTP'
         async_security_rule = network_client.security_rules.create_or_update(
         resource_group_name,
