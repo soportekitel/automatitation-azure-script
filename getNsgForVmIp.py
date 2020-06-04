@@ -97,8 +97,9 @@ try:
     if evolution_public:
         update_nsg_rules.update_rules_evolution(config.get_os_system(), evolution_public, network_client, config.get_resource_group_name(), config.get_security_group_name())
 
-    if config.get_os_system.upper() == 'LINUX':
-        os.system("hostnamectl set-hostname {}".format(vm.name))
+    if config.get_os_system().upper() == 'LINUX':
+        os.system("hostnamectl set-hostname {}".format(hostname))
+
 
 except Exception as eerror:
     subj = "ERROR al ejecutar script {} en {} - {}".format(os.path.basename(__file__), \
