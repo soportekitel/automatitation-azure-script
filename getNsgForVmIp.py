@@ -35,11 +35,10 @@ def get_ip_address():
     return s.getsockname()[0]
 
 def write_file_host(ip_private, ip_public):
-    content_file="""
-    127.0.0.1       localhost
-    ::1             localhost
-    {}              asterisk.ip.private
-    {}              asterisk.ip.public
+    content_file="""127.0.0.1    localhost
+::1    localhost
+{}    asterisk.ip.private
+{}    asterisk.ip.public
     """.format(ip_private, ip_public)
     outfile = open("C:\Windows\System32\drivers\etc\hosts", "w")
     outfile.writelines(content_file)
@@ -47,11 +46,10 @@ def write_file_host(ip_private, ip_public):
 
 def write_file_linux_host(ip_private, ip_public, hostname):
     os.system("hostnamectl set-hostname {}".format(hostname))
-    content_file="""
-    127.0.0.1 {} localhost localhost.localdomain localhost4
-    ::1 {} localhost localhost6
-    {} evolution.ip.private
-    {} evolution.ip.public
+    content_file="""127.0.0.1 {} localhost localhost.localdomain localhost4
+::1 {} localhost localhost6
+{} evolution.ip.private
+{} evolution.ip.public
     """.format(hostname, hostname, ip_private, ip_public)
     outfile = open("/etc/hosts", "w")
     outfile.writelines(content_file)
