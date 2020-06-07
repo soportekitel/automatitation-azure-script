@@ -118,7 +118,7 @@ try:
                             if key_tag == 'evolution':
                                 config.set_evolution(vm.tags[key_tag])
                                 evolution_name = vm.tags[key_tag]
-                            if key_tag == 'asterisk':
+                            if key_tag == 'pbx':
                                 config.set_asterisk(vm.tags[key_tag])
                                 asterisk_name = vm.tags[key_tag]
 
