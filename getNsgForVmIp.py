@@ -149,7 +149,7 @@ try:
     if evolution_name:
         evolution_public = evolution_public_ip + "/32"
         update_nsg_rules.update_rules_evolution(config.get_os_system(), evolution_public, network_client, config.get_resource_group_name(), config.get_security_group_name())
-        write_file_linux_host(evolution_private_ip, evolution_public_ip)
+        write_file_linux_host(evolution_private_ip, evolution_public_ip, hostname)
 
     if asterisk_name:
         write_file_host(asterisk_private_ip, asterisk_public_ip)
