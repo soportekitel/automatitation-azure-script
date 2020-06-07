@@ -56,8 +56,8 @@ class Config(object):
         return self.json_data.get('evolution')
 
 
-    def get_evolution_public(self, values):
-        return self.json_data.get('evolution_public')
+    def get_asterisk(self, values):
+        return self.json_data.get('asterisk')
 
 
     def set_os_system(self, values):
@@ -80,11 +80,11 @@ class Config(object):
         self.save()
 
 
-    def set_evolution(self, values):
-        self.json_data['evolution'] = values
+    def set_asterisk(self, values):
+        self.json_data['asterisk'] = values
         self.save()
 
 
-    def set_evolution_public(self, values):
+    def set_evolution(self, values):
         self.json_data['evolution'] = values
         self.save()
