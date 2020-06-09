@@ -23,36 +23,36 @@ class EvolutionServer(object):
         self.asterisk_ip_public = asterisk_ip_public
         self.evolution_hostname = hostname
 
-        def change_ip_db(self):
-            import pyodbc
-            cnxn = pyodbc.connect('driver={ODBC Driver 17 for SQL Server};server=' + \
-                                   config.get_backup_database_server() + ','+ \
-                                   config.get_backup_database_port() + ';database=' + \
-                                   config.get_backup_database() + ';uid='+ \
-                                   config.get_backup_database_user() + ';pwd=' + \
-                                   config.get_backup_database_password())
+    def change_ip_db(self):
+        import pyodbc
+        cnxn = pyodbc.connect('driver={ODBC Driver 17 for SQL Server};server=' + \
+                               config.get_backup_database_server() + ','+ \
+                               config.get_backup_database_port() + ';database=' + \
+                               config.get_backup_database() + ';uid='+ \
+                               config.get_backup_database_user() + ';pwd=' + \
+                               config.get_backup_database_password())
 
-            cnxn.autocommit = True
-            sql = "UPDATE dbo.SIPServers set Server='" + self.asterisk_ip_public + "', AMIServer='" + self. asterisk_ip_private + "' where Name = 'SCM';"
+        cnxn.autocommit = True
+        sql = "UPDATE dbo.SIPServers set Server='" + self.asterisk_ip_public + "', AMIServer='" + self. asterisk_ip_private + "' where Name = 'SCM';"
 
-            cursor = cnxn.cursor()
-            cursor.execute(sql)
-            while cursor.nextset():
-                  pass
-            cursor.close()
-            cnxn.close()
+        cursor = cnxn.cursor()
+        cursor.execute(sql)
+        while cursor.nextset():
+              pass
+        cursor.close()
+        cnxn.close()
 
-        def write_file_host(self):
-            content_file="""127.0.0.1    localhost
+    def write_file_host(self):
+        content_file="""127.0.0.1    localhost
 127.0.0.1    evo01-spmad
 127.0.0.1    {}
 ::1    localhost
 {}    asterisk.ip.private
 {}    asterisk.ip.public
-            """.format(self.evolution_hostname, self.asterisk_ip_private, self.asterisk_ip_public)
-            outfile = open("C:\Windows\System32\drivers\etc\hosts", "w")
-            outfile.writelines(content_file)
-            outfile.close()
+        """.format(self.evolution_hostname, self.asterisk_ip_private, self.asterisk_ip_public)
+        outfile = open("C:\Windows\System32\drivers\etc\hosts", "w")
+        outfile.writelines(content_file)
+        outfile.close()
 
 class AsteriskServer(object):
 
