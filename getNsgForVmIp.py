@@ -20,6 +20,7 @@ import update_nsg_rules
 from config import *
 from requests import get
 from sendmail import sendalert
+from updateIPAsteriskEvolution import EvolutionServer, AsteriskServer(
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient
@@ -34,26 +35,6 @@ def get_ip_address():
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
 
-def write_file_host(ip_private, ip_public):
-    content_file="""127.0.0.1    localhost
-::1    localhost
-{}    asterisk.ip.private
-{}    asterisk.ip.public
-    """.format(ip_private, ip_public)
-    outfile = open("C:\Windows\System32\drivers\etc\hosts", "w")
-    outfile.writelines(content_file)
-    outfile.close()
-
-def write_file_linux_host(ip_private, ip_public, hostname):
-    os.system("hostnamectl set-hostname {}".format(hostname))
-    content_file="""127.0.0.1 {} localhost localhost.localdomain localhost4
-::1 {} localhost localhost6
-{} evolution.ip.private
-{} evolution.ip.public
-    """.format(hostname, hostname, ip_private, ip_public)
-    outfile = open("/etc/hosts", "w")
-    outfile.writelines(content_file)
-    outfile.close()
 
 def get_vm_ip(vm_name, compute_client, network_client):
     for vm in compute_client.virtual_machines.list_all():
@@ -147,10 +128,14 @@ try:
     if evolution_name:
         evolution_public = evolution_public_ip + "/32"
         update_nsg_rules.update_rules_evolution(config.get_os_system(), evolution_public, network_client, config.get_resource_group_name(), config.get_security_group_name())
-        write_file_linux_host(evolution_private_ip, evolution_public_ip, hostname)
+        asterisk_server = AsteriskServer(evolution_private_ip, evolution_public_ip, hostname)
+        asterisk_server.write_file_host()
+        asterisk_server.change_host_name()
 
     if asterisk_name:
-        write_file_host(asterisk_private_ip, asterisk_public_ip)
+        evolution_server = EvolutionServer(asterisk_private_ip, asterisk_public_ip, hostname)
+        evolution_server.change_ip_db()
+        evolution_server.write_file_host()
 
 except Exception as eerror:
     subj = "ERROR al ejecutar script {} en {} - {}".format(os.path.basename(__file__), \
