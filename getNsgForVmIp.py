@@ -20,7 +20,7 @@ import update_nsg_rules
 from config import *
 from requests import get
 from sendmail import sendalert
-from updateIPAsteriskEvolution import EvolutionServer, AsteriskServer(
+from updateIPAsteriskEvolution import EvolutionServer, AsteriskServer
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient

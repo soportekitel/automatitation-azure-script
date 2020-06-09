@@ -4,7 +4,6 @@ Script for update IP pbx on Evolution or IP Evolution on pbx
 """
 
 import os
-import pyodbc
 import datetime
 import socket
 import sys
@@ -25,6 +24,7 @@ class EvolutionServer(object):
         self.evolution_hostname = hostname
 
         def change_ip_db(self):
+            import pyodbc
             cnxn = pyodbc.connect('driver={ODBC Driver 17 for SQL Server};server=' + \
                                    config.get_backup_database_server() + ','+ \
                                    config.get_backup_database_port() + ';database=' + \
@@ -59,7 +59,7 @@ class AsteriskServer(object):
     def __init__(self, evolution_ip_private, evolution_ip_public, hostname):
         self.evolution_ip_private = evolution_ip_private
         self.evolution_ip_public = evolution_ip_public
-        self.asterisk_hostname = host_name
+        self.asterisk_hostname = hostname
 
     def write_file_host(self):
         content_file="""127.0.0.1 {} localhost localhost.localdomain localhost4
