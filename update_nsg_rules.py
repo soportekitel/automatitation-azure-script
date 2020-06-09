@@ -7,7 +7,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         new_security_rule_name,
         {
         'access':"allow",
-        'description':'Accesos para clientes con dns dínamico',
+        'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
         'destination_port_range':'5060',
         'direction':"inbound",
@@ -25,7 +25,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         new_security_rule_name,
         {
         'access':"allow",
-        'description':'Accesos para clientes con dns dínamico',
+        'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
         'destination_port_range':'10000-20000',
         'direction':"inbound",
@@ -43,7 +43,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         new_security_rule_name,
         {
         'access':"allow",
-        'description':'Accesos para clientes con dns dínamico',
+        'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
         'destination_port_range':'443',
         'direction':"inbound",
@@ -60,7 +60,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         new_security_rule_name,
         {
         'access':"allow",
-        'description':'Accesos para clientes con dns dínamico',
+        'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
         'destination_port_range':'3000',
         'direction':"inbound",
@@ -95,7 +95,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         new_security_rule_name,
         {
         'access':"allow",
-        'description':'Accesos para clientes con dns dínamico',
+        'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
         'destination_port_ranges': ['3555','35555'],
         'direction':"inbound",
@@ -113,7 +113,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         new_security_rule_name,
         {
         'access':"allow",
-        'description':'Accesos para clientes con dns dínamico',
+        'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
         'destination_port_range':'443',
         'direction':"inbound",
