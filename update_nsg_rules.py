@@ -45,7 +45,7 @@ def update_rules(os_system, ip_list, network_client, resource_group_name, securi
         'access':"allow",
         'description':'Accesos para clientes con dns dinamico',
         'destination_address_prefix':'*',
-        'destination_port_range':'443',
+        'destination_port_ranges': ['80', '443']
         'direction':"inbound",
         'priority':1402,
         'protocol':'*',
