@@ -4,7 +4,6 @@ Script for copy freepbx files to Azure
 """
 
 import os
-import datetime
 import socket
 import sys
 import glob
@@ -14,8 +13,8 @@ import pdb
 
 from requests import get
 from sendmail import sendalert
-from backup_config import *
-from azure_container_access import *
+from backup_config import Config
+from azure_container_access import DirectoryClient
 from azure.storage.blob import BlobServiceClient
 
 config = Config()
@@ -25,13 +24,13 @@ host_ip_public = get('http://ifconfig.co/ip').text.rstrip('\n')
 
 container_name = socket.gethostname()
 container_name = container_name.lower()
-container_name = container_name.replace("_","-")
+container_name = container_name.replace("_", "-")
 
 message = ""
 local_path_backup = os.path.join(config.get_directory_backup())
 remote_path_backup = os.path.join(config.get_container_backup())
 
-if os.path.isdir(local_path_backup ):
+if os.path.isdir(local_path_backup):
 
     try:
         blob_service_client = BlobServiceClient.from_connection_string(conn_str=config.get_connection())
@@ -59,14 +58,16 @@ if os.path.isdir(local_path_backup ):
 
         if get_files:
             for file in get_files:
-                if not(os.path.isfile(os.path.join(local_path_backup,file))):
-                    container_client.rm(os.path.join(remote_path_backup,file))
+                if not(os.path.isfile(os.path.join(local_path_backup, file))):
+                    container_client.rm(os.path.join(remote_path_backup, file))
 
         files = os.listdir(local_path_backup)
         for file in files:
-            if os.path.isfile(os.path.join(local_path_backup,file)):
+            if os.path.isfile(os.path.join(local_path_backup, file)):
                 if not(file in get_files):
-                    upload = container_client.upload(os.path.join(local_path_backup,file), os.path.join(remote_path_backup,file))
+                    local_path = os.path.join(local_path_backup, file)
+                    remote_path = os.path.join(remote_path_backup, file)
+                    upload = container_client.upload(local_path, remote_path)
                     upload_result.update(upload)
 
         if upload_result:
@@ -88,7 +89,7 @@ if os.path.isdir(local_path_backup ):
         message = "Ejecutar en {}:\n" \
                   "/usr/local/infodes/azure/env/azure/bin/python " \
                   "/usr/local/infodes/bin/{} \n\n" \
-                  "Error {}".format(host_ip_public, os.path.basename(__file__), \
+                  "Error {}".format(host_ip_public, os.path.basename(__file__),
                                     traceback.format_exc())
 
     if message:

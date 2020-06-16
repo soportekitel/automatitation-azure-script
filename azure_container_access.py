@@ -1,8 +1,9 @@
 import os
-import traceback, pdb
+import pdb
+import traceback
 
-from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob import BlobServiceClient
+
 
 class DirectoryClient:
     def __init__(self, connection_string, container_name):
@@ -26,13 +27,13 @@ class DirectoryClient:
         '''
         print(f'Uploading {source} to {dest}')
         with open(source, 'rb') as data:
-          try:
-              blob_client = self.client.upload_blob(name=dest, data=data, overwrite=True)
-              properties =  blob_client.get_blob_properties()
-              self.result[source] = properties.content_settings.content_md5.hex()
-          except Exception as euploap:
-              self.result[source] = traceback.format_exc()
-              pass
+            try:
+                blob_client = self.client.upload_blob(name=dest, data=data, overwrite=True)
+                properties = blob_client.get_blob_properties()
+                self.result[source] = properties.content_settings.content_md5.hex()
+            except Exception as euploap:
+                self.result[source] = traceback.format_exc()
+                pass
 
     def upload_dir(self, source, dest):
         '''
@@ -99,7 +100,7 @@ class DirectoryClient:
         files = []
         for blob in blob_iter:
             relative_path = os.path.relpath(blob.name, path)
-            if recursive or not '/' in relative_path:
+            if '/' not in relative_path or recursive:
                 files.append(relative_path)
         return files
 
@@ -114,7 +115,7 @@ class DirectoryClient:
         dirs = []
         for blob in blob_iter:
             relative_dir = os.path.dirname(os.path.relpath(blob.name, path))
-            if relative_dir and (recursive or not '/' in relative_dir) and not relative_dir in dirs:
+            if relative_dir and (recursive or '/' not in relative_dir) and relative_dir not in dirs:
                 dirs.append(relative_dir)
 
         return dirs
