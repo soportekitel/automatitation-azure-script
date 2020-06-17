@@ -4,17 +4,11 @@ Script for update IP pbx on Evolution or IP Evolution on pbx
 """
 
 import os
-import datetime
-import socket
-import sys
-import glob
-import hashlib
-import traceback
-import pdb
 
-from backup_windows_config import *
+from backup_windows_config import Config
 
 config = Config()
+
 
 class EvolutionServer(object):
 
@@ -25,34 +19,43 @@ class EvolutionServer(object):
 
     def change_ip_db(self):
         import pyodbc
-        cnxn = pyodbc.connect('driver={ODBC Driver 17 for SQL Server};server=' + \
-                               config.get_backup_database_server() + ','+ \
-                               config.get_backup_database_port() + ';database=' + \
-                               config.get_backup_database() + ';uid='+ \
-                               config.get_backup_database_user() + ';pwd=' + \
-                               config.get_backup_database_password())
+        cnxn_string = ';server={},{};database={};uid={};pwd={}'\
+                      .format(config.get_backup_database_server(),
+                              config.get_backup_database_port(),
+                              config.get_backup_database(),
+                              config.get_backup_database_user(),
+                              config.get_backup_database_password())
+
+        cnxn = pyodbc.connect('driver={ODBC Driver 17 '
+                              'for SQL Server};' + cnxn_string)
 
         cnxn.autocommit = True
-        sql = "UPDATE dbo.SIPServers set Server='" + self.asterisk_ip_public + "', AMIServer='" + self. asterisk_ip_private + "' where Name = 'SCM';"
+        sql = "UPDATE dbo.SIPServers set Server='{}', AMIServer='{}'"\
+              "where Name = 'SCM';".format(self.asterisk_ip_public,
+                                           self.asterisk_ip_private)
 
         cursor = cnxn.cursor()
         cursor.execute(sql)
         while cursor.nextset():
-              pass
+            pass
         cursor.close()
         cnxn.close()
 
     def write_file_host(self):
-        content_file="""127.0.0.1    localhost
+        content_file = """127.0.0.1    localhost
 127.0.0.1    evo01-spmad
 127.0.0.1    {}
 ::1    localhost
 {}    asterisk.ip.private
 {}    asterisk.ip.public
-        """.format(self.evolution_hostname, self.asterisk_ip_private, self.asterisk_ip_public)
-        outfile = open("C:\Windows\System32\drivers\etc\hosts", "w")
+        """.format(self.evolution_hostname,
+                   self.asterisk_ip_private,
+                   self.asterisk_ip_public)
+
+        outfile = open("C:\\Windows\\System32\\drivers\\etc\\hosts", "w")
         outfile.writelines(content_file)
         outfile.close()
+
 
 class AsteriskServer(object):
 
@@ -62,11 +65,15 @@ class AsteriskServer(object):
         self.asterisk_hostname = hostname
 
     def write_file_host(self):
-        content_file="""127.0.0.1 {} localhost localhost.localdomain localhost4
+        content_file = """127.0.0.1 {} localhost localhost.localdomain localhost4
 ::1 {} localhost localhost6
 {} evolution.ip.private
 {} evolution.ip.public
-        """.format(self.asterisk_hostname, self.asterisk_hostname, self.evolution_ip_private, self.evolution_ip_public)
+        """.format(self.asterisk_hostname,
+                   self.asterisk_hostname,
+                   self.evolution_ip_private,
+                   self.evolution_ip_public)
+
         outfile = open("/etc/hosts", "w")
         outfile.writelines(content_file)
         outfile.close()
