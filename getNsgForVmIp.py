@@ -168,6 +168,8 @@ def set_evolution_rules(evolution_name):
 
 try:
 
+    get_vm_values(vm_instance)
+
     if vm_instance["nsg_id"]:
         m = re.search('^.+networkSecurityGroups/(.+)', vm_instance["nsg_id"])
         if m.groups():
