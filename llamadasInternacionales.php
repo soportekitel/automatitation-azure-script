@@ -34,7 +34,7 @@
 	#$MAILDEST2="soporte@kitel.es";
 	
 	
-	$MAILSERV="31.214.176.7";
+	$MAILSERV="smtp.dondominio.com";
 	$MAILFROM="informes@kitel.es";
 	$MAILUSER="informes@kitel.es";
 	$MAILPASS="5gdaCd13?";
@@ -97,7 +97,7 @@
 		$mail->SMTPAuth = true;                               // Enable SMTP authentication
 		$mail->Username = $MAILUSER;                 // SMTP username
 		$mail->Password = $MAILPASS;                           // SMTP password
-		//$mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+		$mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
 		//$mail->SMTPSecure = 'ssl';
 		$mail->Port = 587;                                    // TCP port to connect to
 		
