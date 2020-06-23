@@ -105,18 +105,18 @@ def get_vm_values(vm_instance):
                     config.set_os_system(
                         vm.storage_profile.os_disk.os_type.__dict__['_value_']
                     )
-
-                    for key_tag in vm.tags:
-                        if re.match(r'^DDNS.*', key_tag):
-                            tags_values = vm.tags[key_tag].split(";")
-                            for tag in tags_values:
-                                ddns_field[tag] = socket.gethostbyname(tag)
-                        if key_tag == 'evolution':
-                            config.set_evolution(vm.tags[key_tag])
-                            vm_instance["evolution_name"] = vm.tags[key_tag]
-                        if key_tag == 'pbx':
-                            config.set_asterisk(vm.tags[key_tag])
-                            vm_instance["asterisk_name"] = vm.tags[key_tag]
+                    if vm.tags:
+                        for key_tag in vm.tags:
+                            if re.match(r'^DDNS.*', key_tag):
+                                tags_values = vm.tags[key_tag].split(";")
+                                for tag in tags_values:
+                                    ddns_field[tag] = socket.gethostbyname(tag)
+                            if key_tag == 'evolution':
+                                config.set_evolution(vm.tags[key_tag])
+                                vm_instance["evolution_name"] = vm.tags[key_tag]
+                            if key_tag == 'pbx':
+                                config.set_asterisk(vm.tags[key_tag])
+                                vm_instance["asterisk_name"] = vm.tags[key_tag]
                     return
 
 
