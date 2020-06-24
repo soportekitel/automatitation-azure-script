@@ -12,10 +12,15 @@ config = Config()
 
 class EvolutionServer(object):
 
-    def __init__(self, asterisk_ip_private, asterisk_ip_public, hostname):
+    def __init__(self, asterisk_ip_private, asterisk_ip_public, instance_dict):
         self.asterisk_ip_private = asterisk_ip_private
         self.asterisk_ip_public = asterisk_ip_public
-        self.evolution_hostname = hostname
+        self.evolution_dns = ""
+        if "hostname" in instance_dict:
+            self.evolution_hostname = instance_dict["hostname"]
+        if "midns" in instance_dict:
+            self.evolution_dns = "{}    {}".format(instance_dict["ip_lan"],
+                                                   instance_dict["midns"])
 
     def change_ip_db(self):
         import pyodbc
@@ -48,9 +53,11 @@ class EvolutionServer(object):
 ::1    localhost
 {}    asterisk.ip.private
 {}    asterisk.ip.public
+{}
         """.format(self.evolution_hostname,
                    self.asterisk_ip_private,
-                   self.asterisk_ip_public)
+                   self.asterisk_ip_public,
+                   self.evolution_dns)
 
         outfile = open("C:\\Windows\\System32\\drivers\\etc\\hosts", "w")
         outfile.writelines(content_file)
@@ -59,20 +66,27 @@ class EvolutionServer(object):
 
 class AsteriskServer(object):
 
-    def __init__(self, evolution_ip_private, evolution_ip_public, hostname):
+    def __init__(self, evolution_ip_private, evolution_ip_public, instance_dict):
         self.evolution_ip_private = evolution_ip_private
         self.evolution_ip_public = evolution_ip_public
-        self.asterisk_hostname = hostname
+        self.asterisk_dns = ""
+        if "hostname" in instance_dict:
+            self.asterisk_hostname = instance_dict["hostname"]
+        if "midns" in instance_dict:
+            self.asterisk_dns = "{} {}".format(instance_dict["ip_lan"],
+                                               instance_dict["midns"])
 
     def write_file_host(self):
         content_file = """127.0.0.1 {} localhost localhost.localdomain localhost4
 ::1 {} localhost localhost6
 {} evolution.ip.private
 {} evolution.ip.public
+{}
         """.format(self.asterisk_hostname,
                    self.asterisk_hostname,
                    self.evolution_ip_private,
-                   self.evolution_ip_public)
+                   self.evolution_ip_public,
+                   self.asterisk_dns)
 
         outfile = open("/etc/hosts", "w")
         outfile.writelines(content_file)

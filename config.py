@@ -48,6 +48,9 @@ class Config(object):
     def get_asterisk(self, values):
         return self.json_data.get('asterisk')
 
+    def get_midns(self, values):
+        return self.json_data.get('midns')
+
     def set_os_system(self, values):
         self.json_data['os_system'] = values
         self.save()
@@ -70,4 +73,8 @@ class Config(object):
 
     def set_evolution(self, values):
         self.json_data['evolution'] = values
+        self.save()
+
+    def set_midns(self, values):
+        self.json_data['midns'] = values
         self.save()

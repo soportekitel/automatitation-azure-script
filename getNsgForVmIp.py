@@ -10,19 +10,20 @@ RESOURCE_GROUP_NAME
 """
 
 import os
+import pdb
 import re
 import socket
-import pdb
 import traceback
-import update_nsg_rules
 
-from config import Config
-from requests import get
-from sendmail import sendalert
-from updateIPAsteriskEvolution import EvolutionServer, AsteriskServer
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient
+from requests import get
+
+import update_nsg_rules
+from config import Config
+from sendmail import sendalert
+from updateIPAsteriskEvolution import AsteriskServer, EvolutionServer
 
 config = Config()
 script_path = "/usr/local/infodes/azure/env/azure/bin/python "\
@@ -71,30 +72,34 @@ def get_vm_ip(vm_name):
                     for iface in interfaces:
                         name_ip_public_address = " ".join(
                             iface.public_ip_address.id.split('/')[-1:]
-                        )
+                            )
                         rg_ip_public_address = "".join(
-                            iface.public_ip_address.id.split('/')[4])
+                            iface.public_ip_address.id.split('/')[4]
+                            )
                         public_ip_address = network_client.public_ip_addresses.get(
                             rg_ip_public_address,
                             name_ip_public_address
-                        )
-                        return iface.private_ip_address, public_ip_address.ip_address
+                            )
+                        return iface.private_ip_address,\
+                            public_ip_address.ip_address
 
                 except Exception:
                     return "", ""
 
 
 def get_vm_values(vm_instance):
-
-    ip_lan = get_ip_address()
-
+    vm_instance["ip_lan"] = get_ip_address()
     for vm in compute_client.virtual_machines.list_all():
         for interface in vm.network_profile.network_interfaces:
             interface_name = " ".join(interface.id.split('/')[-1:])
             group_name = "".join(interface.id.split('/')[4])
-            ip_interface = network_client.network_interfaces.get(group_name, interface_name).ip_configurations
+            ip_interface = network_client.\
+                network_interfaces.get(
+                                       group_name,
+                                       interface_name
+                                      ).ip_configurations
             for ip in ip_interface:
-                if ip.private_ip_address == ip_lan:
+                if ip.private_ip_address == vm_instance["ip_lan"]:
                     vm_instance["hostname"] = vm.name
                     vm_instance["resource_group_name"] = group_name
                     vm_instance["nsg_id"] = network_client.\
@@ -103,8 +108,7 @@ def get_vm_values(vm_instance):
                         network_security_group.id
 
                     config.set_os_system(
-                        vm.storage_profile.os_disk.os_type.__dict__['_value_']
-                    )
+                        vm.storage_profile.os_disk.os_type.__dict__['_value_'])
                     if vm.tags:
                         for key_tag in vm.tags:
                             if re.match(r'^DDNS.*', key_tag):
@@ -117,6 +121,8 @@ def get_vm_values(vm_instance):
                             if key_tag == 'pbx':
                                 config.set_asterisk(vm.tags[key_tag])
                                 vm_instance["asterisk_name"] = vm.tags[key_tag]
+                            if key_tag == 'midns':
+                                vm_instance["midns"] = vm.tags[key_tag]
                     return
 
 
@@ -160,7 +166,7 @@ def set_evolution_rules(evolution_name):
     asterisk_server = AsteriskServer(
         evolution_private_ip,
         evolution_public_ip,
-        vm_instance["hostname"]
+        vm_instance
     )
     asterisk_server.write_file_host()
     asterisk_server.change_host_name()
@@ -175,6 +181,8 @@ try:
         if m.groups():
             security_group_name = m.groups()[0]
             config.set_security_group_name(security_group_name)
+            if "midns" in vm_instance:
+                config.set_midns(vm_instance["midns"])
             config.set_resource_group_name(vm_instance["resource_group_name"])
             config.set_ddns(ddns_field)
 
