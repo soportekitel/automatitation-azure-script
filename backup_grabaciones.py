@@ -14,18 +14,20 @@ import pdb
 
 from requests import get
 from sendmail import sendalert
-from backup_config import *
-from azure_container_access import *
+from backup_config import Config
+from azure_container_access import DirectoryClient
 from azure.storage.blob import BlobServiceClient
 
 config = Config()
+script_path = "/usr/local/infodes/azure/env/azure/bin/python "\
+              "/usr/local/infodes/bin/{}".format(os.path.basename(__file__))
 
 host_name = socket.gethostname()
 host_ip_public = get('http://ifconfig.co/ip').text.rstrip('\n')
 
 container_name = socket.gethostname()
 container_name = container_name.lower()
-container_name = container_name.replace("_","-")
+container_name = container_name.replace("_", "-")
 
 today = datetime.datetime.today()
 today_30days_ago = datetime.datetime.today() - datetime.timedelta(days=30)
@@ -33,9 +35,15 @@ year_record = today_30days_ago.strftime("%Y")
 month_record = today_30days_ago.strftime("%m")
 
 message = ""
-local_path_record = os.path.join(config.get_directory_record(), year_record, month_record)
-local_path_record_year = os.path.join(config.get_directory_record(), year_record)
-remote_path_record = os.path.join(config.get_container_record(), year_record)
+local_path_record = os.path.join(config.get_directory_record(),
+                                 year_record, month_record
+                                 )
+local_path_record_year = os.path.join(config.get_directory_record(),
+                                      year_record
+                                      )
+remote_path_record = os.path.join(config.get_container_record(),
+                                  year_record
+                                  )
 
 
 run_backup = False
@@ -44,21 +52,26 @@ if len(sys.argv) > 1:
 elif today.strftime("%-d") == config.get_day_record():
     run_backup = True
 
+
+def verify_container(container_name):
+    containers = blob_service_client.list_containers()
+    create_container = True
+    for container in containers:
+        if container.name == container_name:
+            create_container = False
+            break
+
+    if create_container:
+        blob_service_client.create_container(container_name)
+
+
 if run_backup:
     if os.path.isdir(local_path_record):
 
         try:
             blob_service_client = BlobServiceClient.from_connection_string(conn_str=config.get_connection())
 
-            containers = blob_service_client.list_containers()
-            create_container = True
-            for container in containers:
-                if container.name == container_name:
-                    create_container = False
-                    break
-
-            if create_container:
-                blob_service_client.create_container(container_name)
+            verify_container(container_name)
 
             record_files = [f for f in glob.glob(local_path_record + "/**/*.*", recursive=True)]
             record_files_integrity = {}
@@ -73,17 +86,14 @@ if run_backup:
                 if upload_result[file] == record_files_integrity[file]:
                     os.remove(file)
                 else:
-                    message = "{}\nFile: {} Error: {}".format(file, socket.gethostname())
+                    message = "{}\nFile: {} Error: {}"\
+                        .format(message, file, socket.gethostname())
 
             if len(message) > 0:
                 subj = "ERROR al copiar grabaciones desde {} - {} " \
                        "hasta Azure".format(host_name, host_ip_public)
-                message = "Ejecutar en {}:" \
-                          "'/usr/local/infodes/azure/env/azure/bin/python " \
-                          "/usr/local/infodes/bin/{}'\n\n" \
-                          "Fallo la copia en:\n{}".format(host_ip_public, \
-                                                           os.path.basename(__file__), \
-                                                           message)
+                message = "Ejecutar en {}:\n{}'\n\nFallo la copia en:\n{}"\
+                          .format(host_ip_public, script_path, message)
             else:
                 subj = "Copia exitosa de las grabaciones desde {} - {} " \
                        "hasta Azure".format(host_name, host_ip_public)
@@ -101,28 +111,22 @@ if run_backup:
                 else:
                     message = "{}\n\nLa carpeta {} no fue borrada del servidor. " \
                               "Hay archivos que no se pueden borrar.\n\n" \
-                              "Por favor verifique ".format(message, \
+                              "Por favor verifique ".format(message,
                                                             local_path_record)
 
-        except Exception as eerror:
+        except Exception:
             subj = "ERROR al copiar grabaciones desde {} - {} " \
                    "hasta Azure".format(host_name, host_ip_public)
-            message = "Ejecutar en {}:\n" \
-                      "''/usr/local/infodes/azure/env/azure/bin/python "\
-                      "/usr/local/infodes/bin/{}' \n\n" \
-                      "Error {}".format(host_ip_public, \
-                                        os.path.basename(__file__), \
-                                        traceback.format_exc())
+            message = "Ejecutar en {}:\n{} \n\nError {}"\
+                      .format(host_ip_public, script_path,
+                              traceback.format_exc())
 
     else:
         subj = "ERROR no hay grabaciones en {} - {} para subir " \
                "a Azure".format(host_name, host_ip_public)
         message = "Verificar en {} que exista la carpeta {}\n\n" \
-                  " Si la carperta existe ejecutar:\n" \
-                  "/usr/local/infodes/azure/env/azure/bin/python " \
-                  "/usr/local/infodes/bin/{} \n\n" .format(host_ip_public, \
-                                                           local_path_record, \
-                                                           os.path.basename(__file__))
+                  " Si la carperta existe ejecutar:\n{} \n\n"\
+                  .format(host_ip_public, local_path_record, script_path)
 
 if message:
     sendalert(subj, message, config.get_notification_mailalert())
