@@ -142,12 +142,12 @@ def update_nsg():
         )
 
 
-def set_asteisk_rules(asterisk_name):
+def set_asterisk_rules(asterisk_name):
     asterisk_private_ip, asterisk_public_ip = get_vm_ip(asterisk_name)
     evolution_server = EvolutionServer(
         asterisk_private_ip,
         asterisk_public_ip,
-        vm_instance["hostname"]
+        vm_instance
     )
     evolution_server.change_ip_db()
     evolution_server.write_file_host()
@@ -191,7 +191,7 @@ try:
     if vm_instance["evolution_name"]:
         set_evolution_rules(vm_instance["evolution_name"])
     elif vm_instance["asterisk_name"]:
-        set_asteisk_rules(vm_instance["asterisk_name"])
+        set_asterisk_rules(vm_instance["asterisk_name"])
 
 except Exception:
     subj = "ERROR al ejecutar script {} en {} - {}".\
