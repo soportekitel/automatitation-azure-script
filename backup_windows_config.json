@@ -5,7 +5,7 @@
     "backup_container_backup":"backup",
     "backup_directory_backup":"C:\\infodes\\backup",
     "backup_database": "EVOLUTIONDB",
-    "backup_database_server": "localhost",
+    "backup_database_server": "127.0.0.1",
     "backup_database_port": "1433",
     "backup_database_user": "sa",
     "backup_database_password": "$$5gdaCd13$$",
