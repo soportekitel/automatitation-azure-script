@@ -105,7 +105,7 @@ def verify_container(container_name):
 
 
 def copy_backup(cntnr_name):
-    bck_files = [f for f in glob.glob(local_path_bck + "/**/*.*", True)]
+    bck_files = [f for f in glob.glob(local_path_bck + "/**/*.*", recursive=True)]
     bck_files_integrity = {}
     for bck_file in bck_files:
         bck_files_integrity[bck_file] = hashlib.md5(open(bck_file, 'rb').read()).hexdigest()
