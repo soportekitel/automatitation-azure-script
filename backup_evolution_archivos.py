@@ -185,4 +185,4 @@ else:
                                 SCRIPT_NAME, traceback.format_exc())
 
 if message:
-    sendalert(subj, message, config.get_notification_mailalert())
+    sendalert(subj, message)

@@ -129,4 +129,4 @@ if run_backup:
                   "/usr/local/infodes/bin/{}'\n\n" .format(host_ip_public, os.path.basename(__file__))
 
     if message:
-        sendalert(subj, message, config.get_notification_mailalert())
+        sendalert(subj, message)
