@@ -109,12 +109,14 @@ if run_backup:
                     message = "{}\n\nCarpeta {} borrada del servidor"\
                               .format(message, local_path_cdr)
                 else:
-                    message = "{}\n\nLa carpeta '{}' no fue borrada del servidor." \
-                              "Hay archivos que no se pueden borrar.\n\n" \
-                              "Por favor verifique ".format(message, local_path_cdr)
+                    message = "{}\n\nLa carpeta '{}' no fue borrada del "\
+                              "servidor.\nHay archivos que no se pueden "\
+                              "borrar.\n\nPor favor verifique"\
+                              .format(message, local_path_cdr)
 
         except Exception:
-            subj = "ERROR al copiar CDR desde {} - {} hasta Azure".format(host_name, host_ip_public)
+            subj = "ERROR al copiar CDR desde {} - {} hasta Azure"\
+                   .format(host_name, host_ip_public)
             message = "Ejecutar la secuencia de comandos en '{}':\n{}\n\n" \
                       "Error {}".format(host_ip_public,
                                         script_path, traceback.format_exc())
