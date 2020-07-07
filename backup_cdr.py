@@ -76,12 +76,11 @@ if run_backup:
                                               recursive=True)]
             cdr_files_integrity = {}
             for cdr_file in cdr_files:
-                cdr_files_integrity[cdr_file] = hashlib.\
-                                                md5(
-                                                    open(cdr_file, 'rb').read()
-                                                   ).hexdigest()
+                cdr_files_integrity[cdr_file] = \
+                    hashlib.md5(open(cdr_file, 'rb').read()).hexdigest()
 
-            container_client = DirectoryClient(config.get_connection(), container_name)
+            container_client = DirectoryClient(config.get_connection(),
+                                               container_name)
 
             upload_result = container_client.upload(local_path_cdr,
                                                     remote_path_cdr)
@@ -93,7 +92,7 @@ if run_backup:
                     message = "{}\nFile: {} Error: {}"\
                               .format(message, file, socket.gethostname())
 
-            if len(message) > 0:
+            if message:
                 subj = "ERROR al copiar CDR desde {} - {} hasta Azure"\
                        .format(host_name, host_ip_public)
                 message = "Ejecutar en {}: {}'\n\n"\
@@ -105,7 +104,7 @@ if run_backup:
                 message = "Copia exitosa del CDR desde {} - {} hasta Azure\n"\
                           .format(host_name, host_ip_public)
                 files = os.listdir(local_path_cdr)
-                if len(files) == 0:
+                if not files:
                     os.rmdir(local_path_cdr)
                     message = "{}\n\nCarpeta {} borrada del servidor"\
                               .format(message, local_path_cdr)
@@ -121,12 +120,11 @@ if run_backup:
                                         script_path, traceback.format_exc())
 
     else:
-        subj = "ERROR para subir CDR desde {} - {} hasta Azure".format(host_name, host_ip_public)
-        message = "No hay archivo de CDR en '/var/spool/asterisk/cdr' para subir a Azure.\n\n" \
-                  "Ejecutar la secuencia de comandos en '{}':\n" \
-                  "'/usr/local/infodes/bin/backup_table_cdr.sh |  " \
-                  "/usr/local/infodes/azure/env/azure/bin/python3 " \
-                  "/usr/local/infodes/bin/{}'\n\n" .format(host_ip_public, os.path.basename(__file__))
+        subj = "ERROR para subir CDR desde {} - {} hasta Azure"\
+               .format(host_name, host_ip_public)
+        message = "No hay archivo de CDR en '/var/spool/asterisk/cdr' "\
+                  "para subir a Azure.\n\nEjecutar la secuencia de "\
+                  "comandos en '{}':\n{}".format(host_ip_public, script_path)
 
     if message:
         sendalert(subj, message)
