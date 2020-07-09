@@ -11,8 +11,10 @@ function check_file() {
 
 [ ! -d $backup_dir ] && mkdir -p $backup_dir && chown asterisk: $backup_dir && chmod 777 $backup_dir
 
-check_file /tmp/*[data,header] 
-check_file $backup_dir/*[data,header]
+check_file /tmp/$backup_file"_header" 
+check_file $backup_dir"/"$backup_file"_header"
+check_file /tmp/$backup_file"_data"
+check_file $backup_dir"/"$backup_file"_data"
 
 mysql -u admin -e "select GROUP_CONCAT(CONCAT(\"\",COLUMN_NAME,\"\")) as col_names from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'cdr' AND TABLE_SCHEMA ='asteriskcdrdb' ORDER BY ORDINAL_POSITION" | grep -v col_names | sed 's/,/","/g' | sed -E 's/^|$/"/g' > /tmp/$backup_file"_header"
 
