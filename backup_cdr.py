@@ -22,8 +22,7 @@ from backup_config import Config
 from sendmail import sendalert
 
 config = Config()
-script_path = "/usr/local/infodes/bin/backup_table_cdr.sh | "\
-              "/usr/local/infodes/azure/env/azure/bin/python "\
+script_path = "/usr/local/infodes/azure/env/azure/bin/python "\
               "/usr/local/infodes/bin/{}".format(os.path.basename(__file__))
 
 host_name = socket.gethostname()
@@ -158,9 +157,10 @@ if run_backup:
     else:
         subj = "ERROR para subir CDR desde {} - {} hasta Azure"\
                .format(host_name, host_ip_public)
-        message = "No hay archivo de CDR en '/var/spool/asterisk/cdr' "\
+        message = "No hay archivo de CDR en '{}' "\
                   "para subir a Azure.\n\nEjecutar la secuencia de "\
-                  "comandos en '{}':\n{}".format(host_ip_public, script_path)
+                  "comandos en '{}':\n{}".format(config.get_directory_cdr(),
+                                                 host_ip_public, script_path)
 
     if message:
         sendalert(subj, message)
