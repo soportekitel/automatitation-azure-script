@@ -57,8 +57,7 @@ elif today.strftime("%-d") == config.get_day_cdr():
 
 
 def db_connect():
-    return pymysql.connect(server=config.get_backup_database_server(),
-                           port=config.get_backup_database_port(),
+    return pymysql.connect(host=config.get_backup_database_server(),
                            user=config.get_backup_database_user(),
                            password=config.get_backup_database_password(),
                            database=config.get_backup_database())
