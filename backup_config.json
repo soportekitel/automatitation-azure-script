@@ -10,5 +10,10 @@
     "backup_container_cdr":"cdr",
     "backup_directory_cdr":"/var/spool/asterisk/cdr_backup",
     "backup_day_cdr": "1",
+    "backup_database": "asteriskcdrdb",
+    "backup_database_server": "127.0.0.1",
+    "backup_database_port": "3306",
+    "backup_database_user": "root",
+    "backup_database_password": "$$5gdaCd13$$",
     "backup_mail_alert":["rojasrjosee@gmail.com", "jygrrr@gmail.com"]
 }
