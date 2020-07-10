@@ -7,12 +7,9 @@
 	
 	
 	
-	$DB_USER="root";
-	$DB_PASS="$$5gdaCd13$$";
-	$DB_HOST="localhost";
-	$link=mysql_connect($DB_HOST,$DB_USER,$DB_PASS) or die ("Error: ".mysql_error());
 	
-	$MAILDEST="informes@kitel.es";
+	
+	$MAILDEST="soporte@contigoo.es";
 	#$MAILDEST2="soporte@kitel.es";
 	
 	$MAILSERV="smtp.dondominio.com";
@@ -27,7 +24,7 @@
 	$posicionmemoria=strpos($MEMORIAUSADA," M");
 	$memoria=substr($MEMORIAUSADA,0,$posicionmemoria);
 	
-	$MAILSUBJECT="Informe de canales " .date("d-m-Y H:m:s")."\n";
+	$MAILSUBJECT="Informe de ".gethostname()." de canales " .date("d-m-Y H:m:s")."\n";
 	$MAILBODY="Informacion a ".date("d-m-Y H:m:s")." El numero de canales activos : ".$canal." Memoria en uso:".$memoria." M de 15779 M\n";
 		
 
@@ -68,7 +65,7 @@
 
  else
  {
-	 echo 'CANALES LIBRES';
+	 
  }
 
 

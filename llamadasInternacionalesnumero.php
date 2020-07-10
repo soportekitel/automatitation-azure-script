@@ -28,21 +28,26 @@
 	$DB_USER="root";
 	$DB_PASS="$$5gdaCd13$$";
 	$DB_HOST="localhost";
-	$link=mysql_connect($DB_HOST,$DB_USER,$DB_PASS) or die ("Error: ".mysql_error());
+	$DB_BASE="asteriskcdrdb";
+	$link = mysqli_connect($DB_HOST, $DB_USER, $DB_PASS,$DB_BASE);
 	
-	$MAILDEST="informes@kitel.es";
-	#$MAILDEST2="soporte@kitel.es";
+	/* comprobar la conexión */
+	if (mysqli_connect_errno()) {
+		printf("Falló la conexión: %s\n", mysqli_connect_error());
+		exit();
+	}
 	
+	$MAILDEST="soporte@contigoo.es";
 	
 	$MAILSERV="smtp.dondominio.com";
 	$MAILFROM="informes@kitel.es";
 	$MAILUSER="informes@kitel.es";
 	$MAILPASS="5gdaCd13?";
-	$MAILSUBJECT="Informe de llamadas Extranjero AZURE DE 10 LLAMADAS".fecha_visible($hora_inicio)."\n";
+	$MAILSUBJECT="Informe de llamadas Extranjero AZURE ".gethostname()." DE 10 LLAMADAS ".fecha_visible($hora_inicio)."\n";
 	$MAILBODY="Se adjunta informe de llamadas al Extranjero en el día actual\n";
 
   
-	$archivo_excel="/tmp/LlamadasExtranjero_AZURE".date("d-m-Y").".xls";
+	$archivo_excel="/tmp/LlamadasExtranjero_AZURE_".gethostname()."_".date("d-m-Y").".xls";
 	$workbook = new writeexcel_workbook($archivo_excel);
 	$worksheet_buzon = &$workbook->addworksheet("Llamadas");
 	
@@ -59,30 +64,32 @@
 	
 	$ultima_linea_otras++;
 	
-	$query="select calldate,src,lastapp,dst,billsec from asteriskcdrdb.cdr  where calldate between \"".$hora_inicio."\" and \"".$hora_fin."\"  and  disposition ='Answered' and dst like '00%'";
-	//$query="select calldate,src,lastapp,dst,billsec from asteriskcdrdb.cdr  where calldate between \"".$hora_inicio."\" and \"".$hora_fin."\"  and billsec>600 and  disposition ='Answered'";
-	$result=mysql_query($query,$link);
-	while ($row=mysql_fetch_row($result)) {
-		$calldate=$row[0];
-		$telefono=$row[1];
-		$lastapp=$row[2];
-		$dst=$row[3];
-		$billsec=$row[4];
+
+		if ($result = mysqli_query($link, "select calldate,src,lastapp,dst,billsec from asteriskcdrdb.cdr  where calldate between \"".$hora_inicio."\" and \"".$hora_fin."\"  and  disposition ='Answered' and dst like '00%'"))
+		{
+       
+				while ($row=mysqli_fetch_row($result)) {
+					$calldate=$row[0];
+					$telefono=$row[1];
+					$lastapp=$row[2];
+					$dst=$row[3];
+					$billsec=$row[4];
 		
-				$worksheet_buzon->write($ultima_linea_buzon,0,fecha_visible($calldate));
-				$worksheet_buzon->write($ultima_linea_buzon,1,substr($calldate,11));
-				$worksheet_buzon->write_string($ultima_linea_buzon,2,$telefono);
-				$worksheet_buzon->write_string($ultima_linea_buzon,3,$dst);
-			    $worksheet_buzon->write_string($ultima_linea_buzon,4,$billsec);
-				$ultima_linea_buzon++;
+					$worksheet_buzon->write($ultima_linea_buzon,0,fecha_visible($calldate));
+					$worksheet_buzon->write($ultima_linea_buzon,1,substr($calldate,11));
+					$worksheet_buzon->write_string($ultima_linea_buzon,2,$telefono);
+					$worksheet_buzon->write_string($ultima_linea_buzon,3,$dst);
+					$worksheet_buzon->write_string($ultima_linea_buzon,4,$billsec);
+					$ultima_linea_buzon++;
 				
 			
+				}
+		mysqli_free_result($result);
 	}
-		
 	$workbook->close();
 	
-	if ($ultima_linea_buzon>10)
-	{
+	//if ($ultima_linea_buzon>10)
+	//{
 	
 	
 	
@@ -115,7 +122,7 @@
 			echo 'Message could not be sent.';
 			echo 'Mailer Error: ' . $mail->ErrorInfo;
 		} 
-	}
+	//}
 	unlink($archivo_excel);
-
+    mysqli_close($link);
 ?>

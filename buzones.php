@@ -27,26 +27,32 @@
 	}
 	
 	if ($inicio>=$fin) {
-		$hora_inicio=date("Y/m/d ",strtotime("-1 day")).$inicio.":00";
+		$hora_inicio=date("Y/m/d ",strtotime("-1 day")).$inicio.":00:00";
 		
 	} else {
-		$hora_inicio=date("Y/m/d ").$inicio.":2:00";
+		$hora_inicio=date("Y/m/d ").$inicio.":00:00";
 	}
-	$hora_fin=date("Y/m/d ").$fin.":00";
+	$hora_fin=date("Y/m/d ").$fin.":00:00";
 	
 	$DB_USER="root";
 	$DB_PASS="$$5gdaCd13$$";
 	$DB_HOST="localhost";
-	$link=mysql_connect($DB_HOST,$DB_USER,$DB_PASS) or die ("Error: ".mysql_error());
+	$DB_BASE="asteriskcdrdb";
+	$link = mysqli_connect($DB_HOST, $DB_USER, $DB_PASS,$DB_BASE);
+
+	/* comprobar la conexión */
+	if (mysqli_connect_errno()) {
+		printf("Falló la conexión: %s\n", mysqli_connect_error());
+		exit();
+	}
+	$MAILDEST="soporte@contigoo.es";
 	
-	$MAILDEST="informes@kitel.es";
-	#$MAILDEST3="soporte@kitel.es";
 	$MAILSERV="smtp.dondominio.com";
 	$MAILFROM="informes@kitel.es";
 	$MAILUSER="informes@kitel.es";
 	$MAILPASS="5gdaCd13?";
-	$MAILSUBJECT="Informe de llamadas de AZURE del ".fecha_visible($hora_inicio)." ".hora_visible($hora_inicio)." y ".fecha_visible($hora_fin)." ".hora_visible($hora_fin)."\n";
-	$MAILBODY="Se adjunta informe de llamadas a buzones de voz y llamadas perdidas entre ".fecha_visible($hora_inicio)." ".hora_visible($hora_inicio)." y ".fecha_visible($hora_fin)." ".hora_visible($hora_fin)."\n";
+	$MAILSUBJECT="Informe de llamadas de ".gethostname()." del ".fecha_visible($hora_inicio)." ".hora_visible($hora_inicio)." y ".fecha_visible($hora_fin)." ".hora_visible($hora_fin)."\n";
+	$MAILBODY="Se adjunta informe de ".gethostname()." de llamadas a buzones de voz y llamadas perdidas entre ".fecha_visible($hora_inicio)." ".hora_visible($hora_inicio)." y ".fecha_visible($hora_fin)." ".hora_visible($hora_fin)."\n";
 		
 
 
@@ -80,51 +86,53 @@
 	$worksheet_colgadas->write($ultima_linea_colgadas,4,"Teléfono de Destino");
 	$ultima_linea_colgadas++;
 	
-	//$query="select calldate,src,lastapp,dst,clid from asteriskcdrdb.cdr c1 where (c1.dst like \"%vm%\" or c1.lastapp like \"%Playback%\") and c1.calldate>=\"".$hora_inicio."\" and c1.calldate<\"".$hora_fin."\" and not exists (select * from asteriskcdrdb.cdr c2 where c2.dst=c1.src and c2.calldate>c1.calldate and left(c1.calldate,10)=left(c2.calldate,10)) and src<>'912529523'";
+	
 	$query="select calldate,src,lastapp,dst,clid from asteriskcdrdb.cdr c1 where (c1.dst like \"%vm%\" or c1.lastapp like \"%Playback%\" or (c1.lastapp like \"%Hangup%\" and billsec=0)) and c1.calldate>=\"".$hora_inicio."\" and c1.calldate<\"".$hora_fin."\" and not exists (select * from asteriskcdrdb.cdr c2 where c2.dst=c1.src and c2.calldate>c1.calldate and left(c1.calldate,10)=left(c2.calldate,10)) and src<>'912529523'";
 	
-	$result=mysql_query($query,$link);
-	while ($row=mysql_fetch_row($result)) {
-		$calldate=$row[0];
-		$telefono=$row[1];
-		$lastapp=$row[2];
-		$dst=$row[3];
-		$did=$row[4];
-		switch ($lastapp) {
-			case "VoiceMail": {
-				$worksheet_buzon->write($ultima_linea_buzon,0,fecha_visible($calldate));
-				$worksheet_buzon->write($ultima_linea_buzon,1,substr($calldate,11));
-				$worksheet_buzon->write_string($ultima_linea_buzon,2,$telefono);
-				$worksheet_buzon->write_string($ultima_linea_buzon,3,$dst);
-				$worksheet_buzon->write_string($ultima_linea_buzon,4,$did);
-				$ultima_linea_buzon++;
-				
-				break;
+	echo $query;
+	if ($result = mysqli_query($link, "select calldate,src,lastapp,dst,clid from asteriskcdrdb.cdr c1 where (c1.dst like \"%vm%\" or c1.lastapp like \"%Playback%\" or (c1.lastapp like \"%Hangup%\" and billsec=0)) and c1.calldate>=\"".$hora_inicio."\" and c1.calldate<\"".$hora_fin."\" and not exists (select * from asteriskcdrdb.cdr c2 where c2.dst=c1.src and c2.calldate>c1.calldate and left(c1.calldate,10)=left(c2.calldate,10)) and src<>'912529523'"))
+		{
+			while ($row=mysqli_fetch_row($result)) {
+				$calldate=$row[0];
+				$telefono=$row[1];
+				$lastapp=$row[2];
+				$dst=$row[3];
+				$did=$row[4];
+				switch ($lastapp) {
+					case "VoiceMail": {
+						$worksheet_buzon->write($ultima_linea_buzon,0,fecha_visible($calldate));
+						$worksheet_buzon->write($ultima_linea_buzon,1,substr($calldate,11));
+						$worksheet_buzon->write_string($ultima_linea_buzon,2,$telefono);
+						$worksheet_buzon->write_string($ultima_linea_buzon,3,$dst);
+						$worksheet_buzon->write_string($ultima_linea_buzon,4,$did);
+						$ultima_linea_buzon++;
+						
+						break;
+					}
+					case "Hangup":
+					{
+						$worksheet_colgadas->write($ultima_linea_colgadas,0,fecha_visible($calldate));
+						$worksheet_colgadas->write($ultima_linea_colgadas,1,substr($calldate,11));
+						$worksheet_colgadas->write_string($ultima_colgadas_buzon,2,$telefono);
+						$worksheet_colgadas->write_string($ultima_colgadas_buzon,3,$dst);
+						$worksheet_colgadas->write_string($ultima_colgadas_buzon,4,$did);
+						$ultima_linea_colgadas++;
+						
+						break;
+					}
+					default: {
+						$worksheet_otras->write($ultima_linea_otras,0,fecha_visible($calldate));
+						$worksheet_otras->write($ultima_linea_otras,1,substr($calldate,11));
+						$worksheet_otras->write_string($ultima_linea_otras,2,$telefono);
+						$worksheet_otras->write_string($ultima_linea_otras,3,$dst);
+						$worksheet_otras->write_string($ultima_linea_otras,4,$did);
+						$ultima_linea_otras++;
+						
+						break;
+					}
+				}
 			}
-			case "Hangup":
-			{
-				$worksheet_colgadas->write($ultima_linea_colgadas,0,fecha_visible($calldate));
-				$worksheet_colgadas->write($ultima_linea_colgadas,1,substr($calldate,11));
-				$worksheet_colgadas->write_string($ultima_colgadas_buzon,2,$telefono);
-				$worksheet_colgadas->write_string($ultima_colgadas_buzon,3,$dst);
-				$worksheet_colgadas->write_string($ultima_colgadas_buzon,4,$did);
-				$ultima_linea_colgadas++;
-				
-				break;
-			}
-			default: {
-				$worksheet_otras->write($ultima_linea_otras,0,fecha_visible($calldate));
-				$worksheet_otras->write($ultima_linea_otras,1,substr($calldate,11));
-				$worksheet_otras->write_string($ultima_linea_otras,2,$telefono);
-				$worksheet_otras->write_string($ultima_linea_otras,3,$dst);
-				$worksheet_otras->write_string($ultima_linea_otras,4,$did);
-				$ultima_linea_otras++;
-				
-				break;
-			}
-		}
-	}
-		
+		}		
 	$workbook->close();
 	
 	//Envio de mail
@@ -144,7 +152,7 @@
 	
 	$mail->setFrom($MAILFROM);
 	$mail->addAddress($MAILDEST);
-	$mail->addBCC($MAILDEST3);	
+	
 
 	$mail->addAttachment($archivo_excel);         // Add attachments
 	$mail->isHTML(true);                                  // Set email format to HTML
@@ -158,5 +166,5 @@
 	} 
 	
 	unlink($archivo_excel);
-
+    mysqli_close($link);
 ?>
