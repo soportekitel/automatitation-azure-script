@@ -71,13 +71,14 @@ def db_backup():
 
 
 def db_delete_month():
+    cursor = conn.cursor()
     query = "DELETE from cdr where DATE_FORMAT(calldate , '%Y-%m') = "\
         "'{}-{}'".format(year_cdr, month_cdr_3)
-    conn.execute(query)
+    cursor.execute(query)
     query = "OPTIMIZE TABLE cdr;"
-    conn.execute(query)
+    cursor.execute(query)
     query = "ANALYZE TABLE cdr;"
-    conn.execute(query)
+    cursor.execute(query)
 
 
 def verify_container(container_name):
