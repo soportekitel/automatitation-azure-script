@@ -54,6 +54,21 @@ class Config(object):
     def get_notification_mailalert(self):
         return self.json_data.get('backup_mail_alert')
 
+    def get_backup_database(self):
+        return self.json_data.get('backup_database')
+
+    def get_backup_database_server(self):
+        return self.json_data.get('backup_database_server')
+
+    def get_backup_database_port(self):
+        return self.json_data.get('backup_database_port')
+
+    def get_backup_database_user(self):
+        return self.json_data.get('backup_database_user')
+
+    def get_backup_database_password(self):
+        return self.json_data.get('backup_database_password')
+
     def set_account(self, values):
         self.json_data['backup_account_name'] = values
         self.save()

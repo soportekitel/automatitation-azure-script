@@ -48,7 +48,6 @@ class EvolutionServer(object):
 
     def write_file_host(self):
         content_file = """127.0.0.1    localhost
-127.0.0.1    evo01-spmad
 127.0.0.1    {}
 ::1    localhost
 {}    asterisk.ip.private

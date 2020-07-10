@@ -129,4 +129,4 @@ if run_backup:
                   .format(host_ip_public, local_path_record, script_path)
 
 if message:
-    sendalert(subj, message, config.get_notification_mailalert())
+    sendalert(subj, message)

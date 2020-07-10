@@ -93,4 +93,4 @@ if os.path.isdir(local_path_backup):
                                     traceback.format_exc())
 
     if message:
-        sendalert(subj, message, config.get_notification_mailalert())
+        sendalert(subj, message)
